@@ -7,7 +7,13 @@ import mail from '@sendgrid/mail';
 import { Types } from 'mongoose';
 import Order from '../models/order';
 import Restaurant from '../models/restaurant';
-import { Addons, DateTotal, GenericUser, UserCompany } from '../types';
+import {
+  ActiveOrder,
+  Addons,
+  DateTotal,
+  GenericUser,
+  UserCompany,
+} from '../types';
 import { Request, Response, NextFunction, RequestHandler } from 'express';
 import {
   thursdayOrderReminderTemplate,
@@ -26,22 +32,6 @@ type OrderReminderTemplate = (customer: GenericUser) => {
   from: string;
   subject: string;
   html: string;
-};
-
-type ActiveOrder = {
-  _id: Types.ObjectId;
-  company: {
-    _id: Types.ObjectId;
-  };
-  delivery: {
-    date: Date;
-  };
-  restaurant: {
-    _id: Types.ObjectId;
-  };
-  item: {
-    quantity: number;
-  };
 };
 
 export const setCookie = (res: Response, _id: Types.ObjectId): void => {

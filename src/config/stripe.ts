@@ -1,5 +1,6 @@
 import Stripe from 'stripe';
 import dotenv from 'dotenv';
+import { ActiveOrder, StatusUpdateRestaurant } from '../types';
 
 interface StripePayableOrders {
   date: string;
@@ -18,7 +19,9 @@ export async function stripeCheckout(
   pendingOrderId: string,
   discountCodeId: string,
   discountAmount: number,
-  payableOrders: StripePayableOrders[]
+  payableOrders: StripePayableOrders[],
+  restaurants: StatusUpdateRestaurant[],
+  activeOrders: ActiveOrder[]
 ) {
   try {
     const session = await stripe.checkout.sessions.create({
@@ -39,6 +42,8 @@ export async function stripeCheckout(
       }),
       metadata: {
         details: JSON.stringify({
+          restaurants,
+          activeOrders,
           pendingOrderId,
           discountCodeId,
           discountAmount,

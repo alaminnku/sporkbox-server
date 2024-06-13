@@ -219,3 +219,26 @@ export type UpcomingDataMap = {
     };
   };
 };
+
+export type StatusUpdateRestaurant = {
+  _id: Types.ObjectId;
+  scheduledOn: Date;
+  orderCapacity: number;
+  companyId: Types.ObjectId;
+};
+
+export type ActiveOrder = {
+  _id: Types.ObjectId;
+  company: {
+    _id: Types.ObjectId;
+  };
+  delivery: {
+    date: Date;
+  };
+  restaurant: {
+    _id: Types.ObjectId;
+  };
+  item: {
+    quantity: number;
+  };
+};

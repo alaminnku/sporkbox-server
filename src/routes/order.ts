@@ -562,7 +562,19 @@ router.post('/create-orders', auth, async (req, res) => {
       0
     );
 
+    const restaurants = upcomingRestaurants.map((restaurant) => ({
+      _id: restaurant._id,
+      scheduledOn: restaurant.schedule.date,
+      orderCapacity: restaurant.orderCapacity,
+      companyId: restaurant.company._id,
+    }));
+    const latestActiveOrders = await getActiveOrders(
+      companyIds,
+      restaurantIds,
+      deliveryDates
+    );
     const hasPayableItems = totalPayableAmount > discountAmount;
+
     if (hasPayableItems) {
       const payableOrders = payableDetails.map((payableDetail) => ({
         date: `${dateToText(
@@ -587,7 +599,9 @@ router.post('/create-orders', auth, async (req, res) => {
         pendingOrderId,
         discountCodeId,
         discountAmount,
-        payableOrders
+        payableOrders,
+        restaurants,
+        latestActiveOrders
       );
 
       const pendingOrders = orders.map((order) => ({
@@ -623,24 +637,9 @@ router.post('/create-orders', auth, async (req, res) => {
             },
           }
         ));
+      await updateRestaurantStatus(latestActiveOrders, restaurants);
       res.status(201).json(ordersForCustomers);
     }
-
-    // Update restaurants' status
-    setTimeout(async () => {
-      const latestActiveOrders = await getActiveOrders(
-        companyIds,
-        restaurantIds,
-        deliveryDates
-      );
-      const restaurants = upcomingRestaurants.map((restaurant) => ({
-        _id: restaurant._id,
-        scheduledOn: restaurant.schedule.date,
-        orderCapacity: restaurant.orderCapacity,
-        companyId: restaurant.company._id,
-      }));
-      await updateRestaurantStatus(latestActiveOrders, restaurants);
-    }, 60 * 1000);
   } catch (err) {
     console.log(err);
     throw err;

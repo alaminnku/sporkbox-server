@@ -5,6 +5,7 @@ import { stripe } from '../config/stripe';
 import auth from '../middleware/auth';
 import DiscountCode from '../models/discountCode';
 import { unAuthorized } from '../lib/messages';
+import { updateRestaurantStatus } from '../lib/utils';
 
 const router = Router();
 
@@ -18,6 +19,8 @@ router.post('/webhook', async (req, res) => {
   const pendingOrderId = parsedMetadataDetails.pendingOrderId;
   const discountCodeId = parsedMetadataDetails.discountCodeId;
   const discountAmount = parsedMetadataDetails.discountAmount;
+  const restaurants = parsedMetadataDetails.restaurants;
+  const activeOrders = parsedMetadataDetails.activeOrders;
   const signature = req.headers['stripe-signature'] as string;
 
   try {
@@ -55,7 +58,7 @@ router.post('/webhook', async (req, res) => {
             },
           }
         ));
-
+      await updateRestaurantStatus(activeOrders, restaurants);
       res.status(201).json('Orders status updated');
     } else if (event.type === 'checkout.session.expired' && isSporkBox) {
       await Order.deleteMany({ pendingOrderId, status: 'PENDING' });
