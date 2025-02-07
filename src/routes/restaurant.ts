@@ -908,7 +908,7 @@ router.get('/items/review-stat/:start/:end', auth, async (req, res) => {
       'items.reviews': {
         $elemMatch: { createdAt: { $gte: start, $lte: end } },
       },
-    }).select('items');
+    }).select('name items');
 
     let reviewCount = 0;
     let totalRating = 0;
@@ -979,7 +979,7 @@ router.get(
         'items.reviews': {
           $elemMatch: { createdAt: { $gte: start, $lte: end } },
         },
-      }).select('items');
+      }).select('name items');
 
       let reviewCount = 0;
       let totalRating = 0;
