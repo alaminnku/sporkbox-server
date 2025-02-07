@@ -926,6 +926,8 @@ router.get('/items/review-stat/:start/:end', auth, async (req, res) => {
             reviews.push({
               _id: review._id,
               date: review.createdAt,
+              restaurant: restaurant.name,
+              item: item.name,
               rating: review.rating,
               comment: review.comment,
             });
@@ -933,6 +935,7 @@ router.get('/items/review-stat/:start/:end', auth, async (req, res) => {
         }
       }
     }
+    reviews.sort((a, b) => dateToMS(b.date) - dateToMS(a.date));
 
     res.status(200).json({
       reviews,
@@ -995,6 +998,8 @@ router.get(
               reviews.push({
                 _id: review._id,
                 date: review.createdAt,
+                restaurant: restaurant.name,
+                item: item.name,
                 rating: review.rating,
                 comment: review.comment,
               });
@@ -1002,6 +1007,7 @@ router.get(
           }
         }
       }
+      reviews.sort((a, b) => dateToMS(b.date) - dateToMS(a.date));
 
       res.status(200).json({
         reviews,
